@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-restore-backup
+  namespace: default
+spec:
+  serviceName: "mongo-restore-backup-svc"
+  selector:
+    matchLabels:
+      app: mongo-restore-backup
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: mongo-restore-backup
+    spec:   
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "app"
+        effect: "NoSchedule"   
+      containers:
+      - image: stakater/mongo-backup-restore-s3:0.0.4
+        name: mongo-backup-restore
+        volumeMounts:
+        - mountPath: /backup
+          name: mongo-restore-script-pvc    
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          value: "REPLACE_ME"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "REPLACE_ME"
+        - name: BUCKET
+          value: "REPLACE_ME"
+        - name: BACKUP_FOLDER
+          value: "mongo/"
+        - name: MONGODB_HOST
+          value: "REPLACE_ME"
+        - name: MONGODB_PORT
+          value: "27017"
+#        - name: MONGODB_USER   Default not set
+#          value: ""
+#        - name: MONGODB_PASS   Default not set
+#          value: ""
+#        - name: MONGODB_DB     Not specified. so dump all dbs
+#          value: ""
+        - name: CRON_TIME
+          value: "0 */1 * * *"
+        - name: TZ
+          value: "US/Eastern"
+        - name: CRON_TZ
+          value: "US/Eastern"
+        - name: INIT_BACKUP
+          value: "true"
+        - name: INIT_RESTORE
+          value: "true"
+#        - name: DISABLE_CRON
+#          value: "false"
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-restore-script-pvc
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      storageClassName: efs
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mongo-restore-backup
+  name: mongo-restore-backup-svc
+  namespace: deafult
+spec:
+  ports:
+  # Not used but is expected. Dummy ports
+  - name: "mongo-restore-backup-port"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: mongo-restore-backup
