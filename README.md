@@ -31,7 +31,9 @@ docker run -d \
 ```
 ### Running in K8s
 
-Edit `mongo-restore.yaml` in this repository with ENVIRONMENT variables listed below and run:
+`mongo-restore.yaml` contains a manifest for `StatefulSet` which includes a pod running two containers. The first container is the actual mongodb server that is used by the application and the second is the backup sidecar container. This manifest can be used for any deployment of mongo db instance which includes the automatic backup/restore capabilities. By default AWS credentials and bucket name is fetched from the secret named `mongo`
+
+To use it in k8s configure the variables (in Secrets or manifest) and use the following command to deploy:
 
 `kubectl apply -f mongo-restore.yaml -n <namespace>` 
 

@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongo-restore-backup
-  namespace: default
+  name: mongodb
+  namespace: pliro-dev
 spec:
-  serviceName: "mongo-restore-backup-svc"
+  serviceName: "mongodb"
   selector:
     matchLabels:
-      app: mongo-restore-backup
+      app: mongodb
   replicas: 1 
   template:
     metadata:
       labels:
-        app: mongo-restore-backup
+        app: mongodb
     spec:   
       tolerations:
       - key: "dedicated"
@@ -20,22 +20,40 @@ spec:
         value: "app"
         effect: "NoSchedule"   
       containers:
+      - image: mongo:3.4
+        name: mongodb
+        ports:
+        - containerPort: 27017
+          name: tcp
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongodb-pvc      
+        resources: {}          
       - image: stakater/mongo-backup-restore-s3:0.0.4
-        name: mongo-backup-restore
+        name: mongodb-backup-restore
         volumeMounts:
         - mountPath: /backup
-          name: mongo-restore-script-pvc    
+          name: mongodb-pvc    
         env:
         - name: AWS_ACCESS_KEY_ID
-          value: "REPLACE_ME"
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: aws_access_key_id
         - name: AWS_SECRET_ACCESS_KEY
-          value: "REPLACE_ME"
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: aws_secret_access_key
         - name: BUCKET
-          value: "REPLACE_ME"
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: bucket
         - name: BACKUP_FOLDER
           value: "mongo/"
         - name: MONGODB_HOST
-          value: "REPLACE_ME"
+          value: "localhost"
         - name: MONGODB_PORT
           value: "27017"
 #        - name: MONGODB_USER   Default not set
@@ -56,28 +74,29 @@ spec:
           value: "true"
 #        - name: DISABLE_CRON
 #          value: "false"
+      restartPolicy: Always
+
   volumeClaimTemplates:
   - metadata:
-      name: mongo-restore-script-pvc
+      name: mongodb-pvc
     spec:
       accessModes: [ "ReadWriteMany" ]
       storageClassName: efs
       resources:
         requests:
-          storage: 1Gi
+          storage: 2Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: mongo-restore-backup
-  name: mongo-restore-backup-svc
-  namespace: deafult
+    app: mongodb
+  name: mongodb-svc
+  namespace: pliro-dev
 spec:
   ports:
-  # Not used but is expected. Dummy ports
-  - name: "mongo-restore-backup-port"
-    port: 8080
-    targetPort: 8080
+  - name: "mongo-port"
+    port: 27017
+    targetPort: 27017
   selector:
-    app: mongo-restore-backup
+    app: mongodb
