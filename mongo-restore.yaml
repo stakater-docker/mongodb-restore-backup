@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongodb
-  namespace: pliro-dev
+  namespace: dev
 spec:
   serviceName: "mongodb"
   selector:
@@ -92,7 +92,7 @@ metadata:
   labels:
     app: mongodb
   name: mongodb-svc
-  namespace: pliro-dev
+  namespace: dev
 spec:
   ports:
   - name: "mongo-port"
