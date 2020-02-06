@@ -39,38 +39,24 @@ To use it in k8s configure the variables (in Secrets or manifest) and use the fo
 
 ### ENVIRONMENT variables
 
-`AWS_ACCESS_KEY_ID` - your aws access key id (for your s3 bucket)
-
-`AWS_SECRET_ACCESS_KEY`: - your aws secret access key (for your s3 bucket)
-
-`BUCKET`: - your s3 bucket
-
-`BACKUP_FOLDER`: - name of folder or path to put backups (eg `myapp/db_backups/`). defaults to root of bucket.
-
-`MONGODB_HOST` - the host/ip of your mongodb database
-
-`MONGODB_PORT` - the port number of your mongodb database
-
-`MONGODB_USER` - the username of your mongodb database. If MONGODB_USER is empty while MONGODB_PASS is not, the image will use admin as the default username
-
-`MONGODB_PASS` - the password of your mongodb database
-
-`MONGODB_DB` - the database name to dump. If not specified, it will dump all the databases
-
-`EXTRA_OPTS` - any extra options to pass to mongodump command
-
-`CRON_TIME` - the interval of cron job to run mongodump. `0 1 * * *` by default, which is every hour at 0 mins like 1:00, 2:00...
-
-`TZ` - timezone. default: `US/Eastern`
-
-`CRON_TZ` - cron timezone. default: `US/Eastern`
-
-`INIT_BACKUP` - if defined, create a backup when the container launched
-
-`INIT_RESTORE` - if defined, restore from latest when container is launched
-
-`DISABLE_CRON` - if defined, it will skip setting up automated backups. good for when you want to use this container to seed a dev environment.
-
+| Environment Variables | Description |
+|---|---|
+| AWS_ACCESS_KEY_ID | aws access key id (for your s3 bucket) |
+| AWS_SECRET_ACCESS_KEY | aws secret access key (for your s3 bucket) |
+| BUCKET | s3 bucket name |
+| BACKUP_FOLDER | name of folder or path to put backups (eg `myapp/db_backups/`). defaults to root of bucket. |
+| MONGODB_HOST | the host/ip of your mongodb database |
+| MONGODB_PORT | the port number of your mongodb database |
+| MONGODB_USER | the username of your mongodb database. If MONGODB_USER is empty while MONGODB_PASS is not, the image will use admin as the default username |
+| MONGODB_PASS | the password of your mongodb database |
+| MONGODB_DB | the database name to dump. If not specified, it will dump all the databases |
+| EXTRA_OPTS | any extra options to pass to mongodump command |
+| CRON_TIME | the interval of cron job to run mongodump. `0 1 * * *` by default, which is every hour at 0 mins like 1:00, 2:00... |
+| TZ | timezone. default: `US/Eastern` |
+| CRON_TZ | cron timezone. default: `US/Eastern` |
+| INIT_BACKUP | if defined, create a backup when the container launched |
+| INIT_RESTORE | if defined, restore from latest when container is launched |
+| DISABLE_CRON | if defined, it will skip setting up automated backups. good for when you want to use this container to seed a dev environment. |
 
 ## Acknowledgements
 
