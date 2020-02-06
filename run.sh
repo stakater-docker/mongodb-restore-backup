@@ -87,6 +87,7 @@ if [[ "${DISABLE_CRON}" == "true" ]]; then
     echo "${CRON_TIME} . /root/project_env.sh; /backup.sh >> /mongo_backup.log 2>&1" > /crontab.conf
     crontab  /crontab.conf
     echo "=> Running cron job"
-    cron && tail -f /mongo_backup.log
+    cron
 fi
 
+tail -f /mongo_backup.log
