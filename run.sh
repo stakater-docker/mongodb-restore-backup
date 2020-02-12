@@ -83,7 +83,7 @@ if [[ "${INIT_RESTORE}" == "true" ]]; then
     /restore.sh
 fi
 
-if [[ "${DISABLE_CRON}" == "true" ]]; then
+if [[ "${DISABLE_CRON}" == "false" ]]; then
     echo "${CRON_TIME} . /root/project_env.sh; /backup.sh >> /mongo_backup.log 2>&1" > /crontab.conf
     crontab  /crontab.conf
     echo "=> Running cron job"
